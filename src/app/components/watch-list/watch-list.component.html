@@ -1,0 +1,45 @@
+<mat-accordion *ngIf="seasons$ | async as seasons; else loadingSections">
+  <mat-expansion-panel *ngFor="let season of seasons; let sectionIndex = index" [expanded]="false">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        {{ season.season }}
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <div class="panel-content">
+      <table mat-table [dataSource]="season.episodes">
+        <ng-container matColumnDef="Series">
+          <th mat-header-cell *matHeaderCellDef> Series </th>
+          <td [ngClass]="{'watched': episode.watched }" *matCellDef="let episode"> {{ episode.Series }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="Episode">
+          <th mat-header-cell *matHeaderCellDef> Episode </th>
+          <td [ngClass]="{'watched': episode.watched }" mat-cell *matCellDef="let episode"> {{ episode.Episode }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="TitleNameOrEpisodeTitle">
+          <th mat-header-cell *matHeaderCellDef> Title Name / Episode Title </th>
+          <td [ngClass]="{'watched': episode.watched }" mat-cell *matCellDef="let episode"> {{ episode['Title Name'] || episode['Episode Title'] }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="watched">
+          <th mat-header-cell *matHeaderCellDef> Watched </th>
+          <td [ngClass]="{'watched': episode.watched }" mat-cell *matCellDef="let episode; let episodeIndex = index">
+            <mat-slide-toggle
+              [checked]="episode.watched"
+              color="primary"
+              (change)="updateWatchedStatus(sectionIndex, episodeIndex, $event.checked)"
+            ></mat-slide-toggle>
+          </td>
+        </ng-container>
+        
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" [ngClass]="{ 'watched-row': row.watched }"></tr>
+      </table>
+    </div>
+  </mat-expansion-panel>
+</mat-accordion>
+
+<ng-template #loadingSections>
+  Loading...
+</ng-template>
